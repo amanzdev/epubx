@@ -13,9 +13,7 @@ class EpubChapterRef {
   String? Anchor;
   List<EpubChapterRef>? SubChapters;
 
-  EpubChapterRef(EpubTextContentFileRef? epubTextContentFileRef) {
-    this.epubTextContentFileRef = epubTextContentFileRef;
-  }
+  EpubChapterRef(this.epubTextContentFileRef);
 
   @override
   int get hashCode {
@@ -31,7 +29,7 @@ class EpubChapterRef {
 
   @override
   bool operator ==(other) {
-    if (!(other is EpubChapterRef)) {
+    if (other is! EpubChapterRef) {
       return false;
     }
     return Title == other.Title &&

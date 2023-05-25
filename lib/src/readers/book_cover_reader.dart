@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:image/image.dart' as images;
@@ -28,19 +29,19 @@ class BookCoverReader {
             coverMetaItem.Content!.toLowerCase());
     if (coverManifestItem == null) {
       throw Exception(
-          'Incorrect EPUB manifest: item with ID = \"${coverMetaItem.Content}\" is missing.');
+          'Incorrect EPUB manifest: item with ID = "${coverMetaItem.Content}" is missing.');
     }
 
     EpubByteContentFileRef? coverImageContentFileRef;
     if (!bookRef.Content!.Images!.containsKey(coverManifestItem.Href)) {
       throw Exception(
-          'Incorrect EPUB manifest: item with href = \"${coverManifestItem.Href}\" is missing.');
+          'Incorrect EPUB manifest: item with href = "${coverManifestItem.Href}" is missing.');
     }
 
     coverImageContentFileRef = bookRef.Content!.Images![coverManifestItem.Href];
     var coverImageContent =
         await coverImageContentFileRef!.readContentAsBytes();
-    var retval = images.decodeImage(coverImageContent);
+    var retval = images.decodeImage(Uint8List.fromList(coverImageContent));
     return retval;
   }
 }

@@ -1,8 +1,9 @@
 import 'dart:async';
+import 'dart:convert' as convert;
 
 import 'package:archive/archive.dart';
-import 'dart:convert' as convert;
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:path/path.dart' as path;
 import 'package:quiver/core.dart';
 
 import '../entities/epub_content_type.dart';
@@ -16,9 +17,7 @@ abstract class EpubContentFileRef {
 
   EpubContentType? ContentType;
   String? ContentMimeType;
-  EpubContentFileRef(EpubBookRef epubBookRef) {
-    this.epubBookRef = epubBookRef;
-  }
+  EpubContentFileRef(this.epubBookRef);
 
   @override
   int get hashCode =>
@@ -26,12 +25,11 @@ abstract class EpubContentFileRef {
 
   @override
   bool operator ==(other) {
-    if (!(other is EpubContentFileRef)) {
+    if (other is! EpubContentFileRef) {
       return false;
     }
 
-    return (other is EpubContentFileRef &&
-        other.FileName == FileName &&
+    return (other.FileName == FileName &&
         other.ContentMimeType == ContentMimeType &&
         other.ContentType == ContentType);
   }
@@ -39,6 +37,11 @@ abstract class EpubContentFileRef {
   ArchiveFile getContentFileEntry() {
     var contentFilePath = ZipPathUtils.combine(
         epubBookRef.Schema!.ContentDirectoryPath, FileName);
+
+    if (contentFilePath != null) {
+      contentFilePath = path.normalize(contentFilePath);
+    }
+
     var contentFileEntry = epubBookRef.EpubArchive()!
         .files
         .firstWhereOrNull((ArchiveFile x) => x.name == contentFilePath);
@@ -57,7 +60,7 @@ abstract class EpubContentFileRef {
     var contentStream = <int>[];
     if (contentFileEntry.content == null) {
       throw Exception(
-          'Incorrect EPUB file: content file \"$FileName\" specified in manifest is not found.');
+          'Incorrect EPUB file: content file "$FileName" specified in manifest is not found.');
     }
     contentStream.addAll(contentFileEntry.content);
     return contentStream;
