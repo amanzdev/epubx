@@ -314,7 +314,7 @@ class NavigationReader {
       if (metaNode.name.local.toLowerCase() == 'meta') {
         var meta = EpubNavigationHeadMeta();
         for (var metaNodeAttribute in metaNode.attributes) {
-          var attributeValue = metaNodeAttribute.innerText;
+          var attributeValue = metaNodeAttribute.value;
           switch (metaNodeAttribute.name.local.toLowerCase()) {
             case 'name':
               meta.Name = attributeValue;
